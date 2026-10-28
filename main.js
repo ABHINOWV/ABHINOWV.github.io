@@ -12436,8 +12436,12 @@ void main() {
       let S3 = 0, bandH = 800, dead = false;
       let vB = 0, tP = 0, lastNow = 0;
       let Bv = 0, B0 = -1, asciiTop = 0, vhMax = 0;
+      const standalone = window.self === window.top;
+      let scrollRoot = wrap.parentElement;
+      while (scrollRoot && !(scrollRoot.scrollHeight > scrollRoot.clientHeight && /(auto|scroll)/.test(getComputedStyle(scrollRoot).overflowY))) scrollRoot = scrollRoot.parentElement;
+      const nativeScroll = () => scrollRoot ? scrollRoot.scrollTop : window.scrollY;
       const probe = () => {
-        if (dead) return;
+        if (dead || standalone) return;
         const docH = document.documentElement.scrollHeight;
         const el2 = document.createElement("div");
         el2.style.cssText = `position:absolute;top:0;left:0;width:1px;height:${docH}px;opacity:0;pointer-events:none;`;
@@ -12527,6 +12531,19 @@ void main() {
       let raf = 0, prog = 0;
       const render = (now) => {
         raf = requestAnimationFrame(render);
+        // Standalone Pages scrolls the document itself. The hosted viewer probe
+        // reports viewport coordinates here, so use native document coordinates.
+        if (standalone) {
+          S3 = Math.max(0, nativeScroll());
+          bandH = scrollRoot ? scrollRoot.clientHeight : window.innerHeight;
+          Bv = S3 + bandH;
+          B0 = bandH;
+          vhMax = bandH;
+          vB = 0;
+          tP = now;
+          const asc = document.getElementById("disciplines");
+          if (asc) asciiTop = asc.getBoundingClientRect().top + S3;
+        }
         const t = Math.max(0, Math.min(1, (now - introAt) / INTRO_DUR));
         const e2 = 1 - Math.pow(1 - t, 3);
         const scrollPitch = S3 * 42e-4;
@@ -12540,8 +12557,8 @@ void main() {
             natTop = wrap.getBoundingClientRect().top + S3;
             wrap.style.transform = prevT;
           }
-          const maxTy = Math.max(0, document.documentElement.scrollHeight - H - 30 - natTop);
-          const target = isTabletLayout() && S3 < 1 ? 0 : Math.min(Math.max(0, S3 + bandH * 0.5 - H * 0.5 - natTop), maxTy);
+          const maxTy = Math.max(0, (standalone && scrollRoot ? scrollRoot.scrollHeight : document.documentElement.scrollHeight) - H - 30 - natTop);
+          const target = standalone ? Math.min(Math.max(0, S3 + (bandH * 0.5 - H * 0.5 - natTop) * prog), maxTy) : isTabletLayout() && S3 < 1 ? 0 : Math.min(Math.max(0, S3 + bandH * 0.5 - H * 0.5 - natTop), maxTy);
           if (curY < 0) curY = target;
           curY += (target - curY) * 0.09;
           wrap.style.transform = curY > 1 ? `translateY(${curY.toFixed(1)}px)` : "none";
