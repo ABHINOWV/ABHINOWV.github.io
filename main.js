@@ -7719,9 +7719,6 @@
   function Nu({ children: e2, width: a = "fluid", className: t, ...o }) {
     return (0, import_jsx_runtime8.jsx)("main", { ...o, className: t ? `file-card ${t}` : "file-card", "data-width": a, children: e2 });
   }
-  function es({ children: e2 }) {
-    return (0, import_jsx_runtime8.jsx)("footer", { className: "file-closing", children: e2 });
-  }
   function Le2(e2, a) {
     return e2 == null || a == null ? NaN : e2 < a ? -1 : e2 > a ? 1 : e2 >= a ? 0 : NaN;
   }
@@ -12420,12 +12417,12 @@ void main() {
       let desktop = window.innerWidth >= 900 && finePointer;
       let mobileLayout = window.innerWidth < 900 || isTabletLayout();
       let W = 0, H = 0;
+      const Q2 = 1.8;
       const resize = () => {
-        const r = wrap.getBoundingClientRect();
-        W = r.width;
-        H = r.height;
-        canvas.width = Math.max(1, Math.round(W * dpr));
-        canvas.height = Math.max(1, Math.round(H * dpr));
+        W = wrap.offsetWidth;
+        H = wrap.offsetHeight;
+        canvas.width = Math.max(1, Math.round(W * dpr * Q2));
+        canvas.height = Math.max(1, Math.round(H * dpr * Q2));
       };
       resize();
       const ro = new ResizeObserver(resize);
@@ -12437,6 +12434,8 @@ void main() {
       };
       window.addEventListener("resize", onResize);
       let S3 = 0, bandH = 800, dead = false;
+      let vB = 0, tP = 0, lastNow = 0;
+      let Bv = 0, B0 = -1, asciiTop = 0, vhMax = 0;
       const probe = () => {
         if (dead) return;
         const docH = document.documentElement.scrollHeight;
@@ -12444,19 +12443,30 @@ void main() {
         el2.style.cssText = `position:absolute;top:0;left:0;width:1px;height:${docH}px;opacity:0;pointer-events:none;`;
         el2.setAttribute("aria-hidden", "true");
         document.body.appendChild(el2);
-        const io = new IntersectionObserver((es2) => {
+        const io = new IntersectionObserver((es) => {
           io.disconnect();
           el2.remove();
-          const e2 = es2[0];
+          const e2 = es[0];
           if (e2 && e2.isIntersecting && e2.intersectionRect.height > 0) {
             S3 = Math.max(0, e2.intersectionRect.top);
             bandH = Math.max(80, e2.intersectionRect.height);
+            const nowP = performance.now(), nb = e2.intersectionRect.bottom;
+            if (tP > 0 && nowP - tP > 20) {
+              const v2 = (nb - Bv) / (nowP - tP);
+              vB = vB * 0.5 + v2 * 0.5;
+            }
+            Bv = nb;
+            tP = nowP;
+            vhMax = Math.max(vhMax, bandH);
+            if (Number.isFinite(introAt) && (B0 < 0 || Bv < B0)) B0 = Bv;
+            const asc = document.getElementById("disciplines");
+            if (asc) asciiTop = asc.getBoundingClientRect().top;
           }
         }, { threshold: [0] });
         io.observe(el2);
       };
       probe();
-      const probeTick = window.setInterval(probe, 140);
+      const probeTick = window.setInterval(probe, 70);
       let tYaw = 0, tPitch = 0, yaw = 0, pitch = 0, roll = 0;
       const onMove = (e2) => {
         if (isTabletLayout()) return;
@@ -12514,7 +12524,7 @@ void main() {
       }
       const mobT1 = window.setTimeout(layoutMobile, 900);
       const mobT2 = window.setTimeout(layoutMobile, 3600);
-      let raf = 0;
+      let raf = 0, prog = 0;
       const render = (now) => {
         raf = requestAnimationFrame(render);
         const t = Math.max(0, Math.min(1, (now - introAt) / INTRO_DUR));
@@ -12539,7 +12549,23 @@ void main() {
           curY = 0;
           wrap.style.transform = "none";
         }
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (B0 >= 0 && asciiTop > 0) {
+          const ahead = Math.min(220, Math.max(0, now - tP));
+          const Bn = Bv + vB * ahead;
+          const endB = asciiTop - 0.2 * Math.max(vhMax, 500);
+          const pT = Math.max(0, Math.min(1, (Bn - B0) / Math.max(200, endB - B0)));
+          const dt3 = lastNow ? Math.min(60, now - lastNow) : 16;
+          prog += (pT - prog) * (1 - Math.exp(-dt3 / 160));
+        }
+        lastNow = now;
+        {
+          const op = wrap.offsetParent || wrap.parentElement;
+          const dx = op ? (op.clientWidth / 2 - (wrap.offsetLeft + wrap.offsetWidth / 2)) * prog : 0;
+          const k2 = 1 + (desktop ? 1 : 0.9) * prog;
+          const ty = wrap.style.transform.match(/translateY\(([-0-9.]+)px\)/);
+          wrap.style.transform = `translate(${dx.toFixed(1)}px, ${ty ? ty[1] : "0"}px) scale(${k2.toFixed(3)})`;
+        }
+        ctx.setTransform(dpr * Q2, 0, 0, dpr * Q2, 0, 0);
         ctx.clearRect(0, 0, W, H);
         if (t <= 0) return;
         const iYaw = yaw + (1 - e2) * -1.9;
@@ -13379,7 +13405,7 @@ void main() {
       img: altus_default,
       project: "Altus",
       route: "/altus",
-      lead: "Cohesive brand systems that go beyond a logo - how a brand looks, feels and speaks, from mark to full visual language.",
+      lead: "Cohesive brand systems that go beyond a logo, how a brand looks, feels and speaks, from mark to full visual language.",
       deliverables: ["Logo & wordmark", "Visual language", "Brand guidelines"]
     },
     {
@@ -13390,7 +13416,7 @@ void main() {
       img: stussy_default,
       project: "Stussy x J.Riggings",
       route: "/stussy",
-      lead: "Bold, idea-led campaign visuals built to grab attention and hold it, across print, social and film.",
+      lead: "Bold, idea led campaign visuals built to grab attention and hold it, across print, social and film.",
       deliverables: ["Concept", "Art direction", "Campaign assets"]
     },
     {
@@ -13401,7 +13427,7 @@ void main() {
       img: thakthom_default,
       project: "Thakthom",
       route: "/thakthom",
-      lead: "Film work that tells a story in motion - from direction and shooting to the final edit and grade.",
+      lead: "Film work that tells a story in motion, from direction and shooting to the final edit and grade.",
       deliverables: ["Direction", "Cinematography", "Edit & grade"]
     },
     {
@@ -13441,25 +13467,68 @@ void main() {
     }, []);
     return ref;
   }
+  function CoverShuffle() {
+    const [slots, setSlots] = (0, import_react28.useState)(() => [5, 0, 3, 7, null, 1, 2, 6, 4]);
+    const lastRef = (0, import_react28.useRef)(-1);
+    (0, import_react28.useEffect)(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const id = window.setInterval(() => {
+        setSlots((cur) => {
+          const e2 = cur.indexOf(null);
+          const r = Math.floor(e2 / 3), c = e2 % 3;
+          let nb = [];
+          if (c > 0) nb.push(e2 - 1);
+          if (c < 2) nb.push(e2 + 1);
+          if (r > 0) nb.push(e2 - 3);
+          if (r < 2) nb.push(e2 + 3);
+          const pick2 = nb.filter((x) => x !== lastRef.current);
+          const s = (pick2.length ? pick2 : nb)[Math.floor(Math.random() * (pick2.length ? pick2.length : nb.length))];
+          const next = cur.slice();
+          next[e2] = cur[s];
+          next[s] = null;
+          lastRef.current = e2;
+          return next;
+        });
+      }, 1200);
+      return () => window.clearInterval(id);
+    }, []);
+    const where = (k2) => {
+      const i = slots.indexOf(k2);
+      return { r: Math.floor(i / 3), c: i % 3 };
+    };
+    return /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-shuffle", "aria-hidden": "true", children: works.map((w, k2) => {
+      const { r, c } = where(k2);
+      return /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(
+        "img",
+        {
+          src: w.img,
+          alt: "",
+          draggable: false,
+          style: { ["--c"]: c, ["--r"]: r }
+        },
+        w.title
+      );
+    }) });
+  }
   function usePortraitFlip(cardRef) {
     (0, import_react28.useEffect)(() => {
       const card = cardRef.current;
       if (!card) return;
       const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      const scrollEnabled = finePointer && window.innerWidth >= 900 && !isTabletLayout();
+      const scrollEnabled = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      void finePointer;
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let target = 0, cur = 0, raf = 0;
       let tapFlipped = false, tapCur = 0;
-      const range = () => 1400;
-      const HOLD = 0.55;
       const front = card.querySelector(".nk-portrait-front");
       const back = card.querySelector(".nk-portrait-back");
+      const q0 = () => cur;
       const apply = () => {
-        if (cur === 0 && tapCur === 0) {
+        if (q0() === 0 && tapCur === 0) {
           card.style.transform = "none";
           return;
         }
-        const q2 = Math.max(0, (cur - HOLD) / (1 - HOLD));
+        const q2 = cur;
         const ry = q2 * 360 + tapCur;
         const rx = 6 * Math.sin(q2 * Math.PI * 2);
         card.style.transform = `rotateY(${ry.toFixed(3)}deg) rotateX(${rx.toFixed(3)}deg)`;
@@ -13480,11 +13549,6 @@ void main() {
       const kick = () => {
         if (!raf) raf = requestAnimationFrame(tick);
       };
-      const onWheel = (e2) => {
-        const unit = e2.deltaMode === 1 ? 33 : 1;
-        target = Math.max(0, Math.min(1, target + e2.deltaY * unit / range()));
-        kick();
-      };
       const toggleTap = () => {
         tapFlipped = !tapFlipped;
         card.setAttribute("aria-pressed", String(tapFlipped));
@@ -13502,13 +13566,45 @@ void main() {
         e2.preventDefault();
         toggleTap();
       };
+      let dead = false, vh = 700;
+      const probe = () => {
+        if (dead) return;
+        const docH = document.documentElement.scrollHeight;
+        const el2 = document.createElement("div");
+        el2.style.cssText = `position:absolute;top:0;left:0;width:1px;height:${docH}px;opacity:0;pointer-events:none;`;
+        el2.setAttribute("aria-hidden", "true");
+        document.body.appendChild(el2);
+        const io = new IntersectionObserver((es) => {
+          io.disconnect();
+          el2.remove();
+          const e2 = es[0];
+          if (!e2 || !e2.isIntersecting || e2.intersectionRect.height <= 0) return;
+          const B3 = e2.intersectionRect.bottom;
+          vh = Math.max(vh, e2.intersectionRect.height);
+          const host = card.parentElement || card;
+          const r = host.getBoundingClientRect();
+          const cardTop = r.top, cardH = r.height;
+          const d = B3 - cardTop;
+          card.dataset.dbg = [Math.round(B3), Math.round(vh), Math.round(cardTop), Math.round(d)].join(",");
+          const s0 = 0.5 * vh;
+          const s1 = Math.max(s0 + 300, vh + 0.4 * cardH);
+          const nt3 = Math.max(0, Math.min(1, (d - s0) / (s1 - s0)));
+          if (nt3 !== target) {
+            target = nt3;
+            kick();
+          }
+        }, { threshold: [0] });
+        io.observe(el2);
+      };
+      probe();
+      const probeTick = scrollEnabled ? window.setInterval(probe, 90) : 0;
       card.addEventListener("click", toggleTap);
       card.addEventListener("keydown", onKeyDown);
-      if (scrollEnabled) window.addEventListener("wheel", onWheel, { passive: true });
       return () => {
+        dead = true;
+        window.clearInterval(probeTick);
         card.removeEventListener("click", toggleTap);
         card.removeEventListener("keydown", onKeyDown);
-        if (scrollEnabled) window.removeEventListener("wheel", onWheel);
         if (raf) cancelAnimationFrame(raf);
       };
     }, [cardRef]);
@@ -13592,8 +13688,8 @@ void main() {
         const y2 = Math.max(0, hb + MARGIN - barTop);
         bar.style.transform = y2 > 0.5 ? `translateY(${y2.toFixed(1)}px)` : "none";
       };
-      const onEntries = (es2) => {
-        for (const e2 of es2) {
+      const onEntries = (es) => {
+        for (const e2 of es) {
           const br2 = e2.boundingClientRect, ir2 = e2.intersectionRect;
           if (!e2.isIntersecting || ir2.height <= 0) continue;
           const topC = ir2.top > br2.top + 0.5;
@@ -13619,9 +13715,9 @@ void main() {
           probe.setAttribute("aria-hidden", "true");
           rootEl.appendChild(probe);
           const first = await new Promise((res) => {
-            const pio = new IntersectionObserver((es2) => {
+            const pio = new IntersectionObserver((es) => {
               pio.disconnect();
-              res(es2[0]);
+              res(es[0]);
             }, { threshold: [0] });
             pio.observe(probe);
           });
@@ -13854,10 +13950,10 @@ void main() {
         el2.style.cssText = `position:absolute;top:0;left:0;width:1px;height:${document.documentElement.scrollHeight}px;opacity:0;pointer-events:none;`;
         el2.setAttribute("aria-hidden", "true");
         document.body.appendChild(el2);
-        const io = new IntersectionObserver((es2) => {
+        const io = new IntersectionObserver((es) => {
           io.disconnect();
           el2.remove();
-          const e2 = es2[0];
+          const e2 = es[0];
           if (e2 && e2.isIntersecting && e2.intersectionRect.height > 0) {
             bandTop = Math.max(0, e2.intersectionRect.top);
             bandH = e2.intersectionRect.height;
@@ -14142,186 +14238,172 @@ void main() {
     const flipRef = (0, import_react28.useRef)(null);
     usePortraitFlip(flipRef);
     useHeroParallax(heroRef);
-    const [heroWork, ...gridWorks] = works;
-    return /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Nu, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk", id: "top", ref: rootRef, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Loader, { skip: startAtWork }),
-        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(CursorFX, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Grain, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(WireCam, {}),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(TopBar, {}),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("header", { className: "nk-hero", ref: heroRef, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-hero-labels", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "[ Brand identity ]" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Independent" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Ahmedabad, IN" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Selected work [08]" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(FluidGiant, {}),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-hero-grid", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-portrait-shell rv", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(
-                "div",
-                {
-                  className: "nk-portrait",
-                  ref: flipRef,
-                  role: "button",
-                  tabIndex: 0,
-                  "aria-pressed": "false",
-                  "aria-label": "Portrait card - activate to flip to the AS monogram and back",
-                  children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-portrait-face nk-portrait-front", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("img", { src: portrait_default, alt: "Black and white portrait of Abhinav S" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-portrait-tag", children: "PORTRAIT" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-portrait-body", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: "Abhinav S" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Communication Designer" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-portrait-chip", children: [
-                          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-dot" }),
-                          " Replies on Behance"
-                        ] })
+    return /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Nu, { children: /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk", id: "top", ref: rootRef, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Loader, { skip: startAtWork }),
+      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(CursorFX, {}),
+      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Grain, {}),
+      /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(WireCam, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(TopBar, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("header", { className: "nk-hero", ref: heroRef, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-hero-labels", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "[ Brand identity ]" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Independent" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Ahmedabad, IN" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Selected work [08]" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(FluidGiant, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-hero-grid", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-portrait-shell rv", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(
+              "div",
+              {
+                className: "nk-portrait",
+                ref: flipRef,
+                role: "button",
+                tabIndex: 0,
+                "aria-pressed": "false",
+                "aria-label": "Portrait card - activate to flip to the AS monogram and back",
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-portrait-face nk-portrait-front", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("img", { src: portrait_default, alt: "Black and white portrait of Abhinav S" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-portrait-tag", children: "PORTRAIT" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-portrait-body", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: "Abhinav S" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Communication Designer" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-portrait-chip", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-dot" }),
+                        " Replies on Behance"
                       ] })
-                    ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-portrait-face nk-portrait-back", "aria-hidden": "true", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-portrait-back-mono", children: [
-                        "AS",
-                        /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("sup", { children: "\xAE" })
-                      ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-portrait-back-cap", children: "[ Abhinav S ]" })
                     ] })
-                  ]
-                }
-              ) }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-disciplines rv", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-disc-title", children: "Disciplines" }),
-                disciplines.map((d) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-disc-row", href: "#work", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: d.name }),
-                  /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-disc-count", children: [
-                    "[",
-                    d.count,
-                    "]"
-                  ] })
-                ] }, d.name))
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", id: "about", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "01", children: "Approach" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("h2", { className: "nk-h2 rv", children: [
-              "Every visual starts with an idea. ",
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("em", { children: "Character, colour and craft give the work its point of view." })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-approach-body rv", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: "I work across brand identity, campaign design and 3D. Strong ideas, clean execution and a considered sequence give each project its own character." }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: "A studio of one, with a direct line from the first sketch to the final artwork." }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("a", { className: "nk-textlink", href: "#contact", children: "More about me" })
-            ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-ascii", id: "disciplines", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-row-between", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "02", children: "Disciplines" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-label", children: "ASCII / Interactive" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-ascii-stage nk-ascii-stage-disc", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(AsciiDisciplines, {}) })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", id: "work", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-row-between", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "03", children: "Selected work" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-label", children: "\xA9 2026" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "Case studies" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Link, { className: "nk-workhero rv", to: heroWork.route, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("img", { src: heroWork.img, alt: `${heroWork.title} - ${heroWork.sub}` }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(WorkChip, { i: 0, title: heroWork.title, tag: heroWork.tag, hint: "Open \u2197" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-workgrid", children: gridWorks.map((w, i) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Link, { className: `nk-workcard${w.title === "OFFGRID" ? " offgrid-cover" : ""} rv`, to: w.route, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("img", { src: w.img, alt: `${w.title} - ${w.sub}`, loading: "lazy" }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(WorkChip, { i: i + 1, title: w.title, tag: w.tag, hint: "Open \u2197" })
-            ] }, w.title)) })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "04", children: "Services" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "What I do" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-sub rv", children: "Four connected disciplines. Each project finds its own balance of idea, craft and finish." }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(ServiceStage, {})
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "05", children: "Project index" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "All eight projects" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-tickets", children: [
-              works.map((w, i) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Link, { className: `nk-ticket nk-ticket-f${i % 3} rv`, to: w.route, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-name", children: w.title }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-rule" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-ticket-meta", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-sq" }),
-                    " ",
-                    w.tag.toUpperCase()
                   ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "PROJECT" })
+                  /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-portrait-face nk-portrait-back", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(CoverShuffle, {}) })
+                ]
+              }
+            ) }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-disciplines rv", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-disc-title", children: "Disciplines" }),
+              disciplines.map((d) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-disc-row", href: "#work", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: d.name }),
+                /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-disc-count", children: [
+                  "[",
+                  d.count,
+                  "]"
                 ] })
-              ] }, w.title)),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-ticket nk-ticket-dark rv", href: BEHANCE, target: "_blank", rel: "noreferrer", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-quote", children: "A collection of brand, campaign and 3D work, from restaurant identities to sculptural form studies." }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-meta", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Explore on Behance \u2197" }) })
-              ] })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc-totals rv", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "SUBTOTAL" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "08 PROJECTS" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "TAX" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "0.00" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc-total", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "TOTAL" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "08" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "PAID BY" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "IDEAS + CRAFT" })
-              ] })
+              ] }, d.name))
             ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-dark", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "06", children: "Studio notes" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl nk-light rv", children: "Notes" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("blockquote", { className: "nk-quote rv", children: "\u201CI create high-impact visuals and structured design work built to leave a lasting impression.\u201D" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-quote-by rv", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: "Abhinav S" }),
-                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Graphic designer" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("a", { className: "nk-textlink", href: BEHANCE, target: "_blank", rel: "noreferrer", children: "View Behance" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-stats", children: stats.map((s) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-stat rv", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: s.n }),
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: s.label })
-            ] }, s.n + s.label)) })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section nk-contact", id: "contact", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "07", children: "Availability" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "Let\u2019s make something amazing together." }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-sub rv", children: "New brand identities, campaigns and 3D studies. Send a message and I will get back to you." }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-bigcta rv", href: BEHANCE, target: "_blank", rel: "noreferrer", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-sq" }),
-              " Start a project on Behance"
-            ] })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("footer", { className: "nk-footer", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-dash" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-thanks", children: "THANK YOU FOR VISITING!" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-small", children: "NO REFUNDS. NEW WORK ALWAYS IN STOCK." }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Barcode, { seed: 11, label: "2026 0718 ABHINAV S" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-mono", children: "behance.net/abhinavs8" }),
-            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-mono", children: "ABHINAV S \xA0\xB7\xA0 PORTFOLIO EDITION \xA0\xB7\xA0 \xA9 2026" })
           ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", id: "about", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "01", children: "Approach" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("h2", { className: "nk-h2 rv", children: [
+            "Every visual starts with an idea. ",
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("em", { children: "Character, colour and craft give the work its point of view." })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-approach-body rv", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: "I work across brand identity, campaign design and 3D. Strong ideas, clean execution and a considered sequence give each project its own character." }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: "A studio of one, with a direct line from the first sketch to the final artwork." }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("a", { className: "nk-textlink", href: "#contact", children: "More about me" })
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-ascii", id: "disciplines", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-row-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "02", children: "Disciplines" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-label", children: "ASCII / Interactive" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-ascii-stage nk-ascii-stage-disc", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(AsciiDisciplines, {}) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", id: "work", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-row-between", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "03", children: "Selected work" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-label", children: "\xA9 2026" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "Case studies" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-workgrid", children: works.map((w, i) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Link, { className: `nk-workcard${w.title === "OFFGRID" ? " offgrid-cover" : ""} rv`, to: w.route, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("img", { src: w.img, alt: `${w.title} - ${w.sub}`, loading: "lazy" }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(WorkChip, { i, title: w.title, tag: w.tag, hint: "Open \u2197" })
+          ] }, w.title)) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "04", children: "Services" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "What I do" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-sub rv", children: "Four connected disciplines. Each project finds its own balance of idea, craft and finish." }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(ServiceStage, {})
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "05", children: "Project index" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "All eight projects" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-tickets", children: [
+            works.map((w, i) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)(Link, { className: `nk-ticket nk-ticket-f${i % 3} rv`, to: w.route, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-name", children: w.title }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-rule" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { className: "nk-ticket-meta", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("span", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-sq" }),
+                  " ",
+                  w.tag.toUpperCase()
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "PROJECT" })
+              ] })
+            ] }, w.title)),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-ticket nk-ticket-dark rv", href: BEHANCE, target: "_blank", rel: "noreferrer", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-quote", children: "A collection of brand, campaign and 3D work, from restaurant identities to sculptural form studies." }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-ticket-meta", children: /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Explore on Behance \u2197" }) })
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc-totals rv", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "SUBTOTAL" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "08 PROJECTS" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "TAX" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "0.00" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "rc-total", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "TOTAL" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "08" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "PAID BY" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "IDEAS + CRAFT" })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-dark", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "06", children: "Studio notes" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl nk-light rv", children: "Notes" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("blockquote", { className: "nk-quote rv", children: "\u201CI create high impact visuals and structured design work built to leave a lasting impression.\u201D" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-quote-by rv", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: "Abhinav S" }),
+              /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { children: "Graphic designer" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("a", { className: "nk-textlink", href: BEHANCE, target: "_blank", rel: "noreferrer", children: "View Behance" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("div", { className: "nk-stats", children: stats.map((s) => /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("div", { className: "nk-stat rv", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("strong", { children: s.n }),
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { children: s.label })
+          ] }, s.n + s.label)) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("section", { className: "nk-section nk-contact", id: "contact", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Label, { n: "07", children: "Availability" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("h2", { className: "nk-h2 nk-h2-xl rv", children: "Let\u2019s make something amazing together." }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "nk-sub rv", children: "New brand identities, campaigns and 3D studies. Send a message and I will get back to you." }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("a", { className: "nk-bigcta rv", href: BEHANCE, target: "_blank", rel: "noreferrer", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-sq" }),
+            " Behance"
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime33.jsxs)("footer", { className: "nk-footer", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-dash" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-thanks", children: "THANK YOU FOR VISITING!" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("p", { className: "rc-small", children: "NEW WORK ALWAYS IN STOCK." }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(Barcode, { seed: 11, label: "2026 0718 ABHINAV S" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-mono", children: "behance.net/abhinavs8" }),
+          /* @__PURE__ */ (0, import_jsx_runtime33.jsx)("span", { className: "nk-mono", children: "ABHINAV S \xA0\xB7\xA0 PORTFOLIO EDITION \xA0\xB7\xA0 \xA9 2026" })
         ] })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime33.jsx)(es, { children: "Original seven project covers and Behance stats checked 17 Oct 2026 (behance.net/abhinavs8). OFFGRID brand identity concept and Tuborg case study added 27 Oct 2026. Layout references nikastern.framer.media." })
-    ] });
+      ] })
+    ] }) });
   }
   function TuborgRoute() {
     const ref = (0, import_react28.useRef)(null);
