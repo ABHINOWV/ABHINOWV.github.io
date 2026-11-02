@@ -4022,7 +4022,7 @@ html, body { background: var(--desk); }
 .rc .nk-hero-labels { grid-template-columns: repeat(2, 1fr); font-size: 11px; padding-bottom: 14px; border-bottom: 1px dotted var(--ink); }
 .rc .nk-hero-labels span { text-decoration: none; }
 .rc .nk-hero-labels span:nth-child(2n) { justify-self: end; text-align: right; }
-.rc .nk-hero-labels span:last-child { justify-self: end; }
+.rc .nk-hero-labels span:last-child:nth-child(even) { justify-self: end; }
 .rc .nk-giant-fluid { margin: 18px 0 18px; }
 .rc .nk-giant { font-family: var(--rmono); font-weight: 800; color: var(--ink); font-size: clamp(44px, 18.5vw, 80px); letter-spacing: -.06em; line-height: .9; }
 .rc .nk-giant.fluid-on { color: transparent; }

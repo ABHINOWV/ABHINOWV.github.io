@@ -11106,7 +11106,6 @@ void main() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, { theme, onToggle: onToggleTheme }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "nk-hero", ref: heroRef, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nk-hero-labels", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "[ Brand identity ]" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Independent" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Ahmedabad, IN" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Selected work [08]" })
