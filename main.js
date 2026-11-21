@@ -10237,8 +10237,18 @@ void main() {
   const nbCover = "/assets/nbcover.webp";
   const nbPages = [[nb01, 800, 800], [nb02, 1400, 500], [nb03, 1400, 1400], [nb04, 1400, 1400], [nb05, 800, 800], [nb06, 1400, 1400], [nb07, 800, 800], [nb08, 1400, 1400], [nb09, 800, 800], [nb10, 800, 800], [nb11, 1400, 1400], [nb12, 1400, 1400], [nb13, 1400, 800], [nb14, 1400, 1400], [nb15, 1400, 800], [nb16, 1400, 1400], [nb17, 1400, 800], [nb18, 1400, 800]];
   const nbAlt = (n2) => "No Borders - campaign styling, panel " + n2 + " of 18";
+  const nbVideo = "/assets/nbvideo.webp";
+  const nbVid = "0tDPMFQQr-I";
+  function NoBordersVideo() {
+    const [on, setOn] = reactExports.useState(false);
+    const yt = "https://youtu.be/" + nbVid;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs-video", style: { backgroundImage: `url(${nbVideo})`, backgroundSize: "cover", backgroundPosition: "center" }, children: on ? /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { src: "https://www.youtube.com/embed/" + nbVid + "?autoplay=1&rel=0", title: "Love Never Fades, No Border Shop styling", allow: "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen", allowFullScreen: true }) : /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", className: "cs-video-link", "aria-label": "Play the NO BORDERS film", onClick: () => setOn(true), style: { position: "absolute", inset: 0, width: "100%", border: 0, padding: 0, cursor: "pointer", background: "transparent" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "cs-play", "aria-hidden": "true", children: "\u25B6" }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "cs-video-cap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: yt, target: "_blank", rel: "noreferrer", style: { color: "inherit" }, children: "FULL FILM - WATCH ON YOUTUBE \u2197" }) })
+    ] });
+  }
   function NoBordersProject() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileCard, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "cs", children: nbPages.map(([src, w2, h], ix) => /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src, alt: nbAlt(ix + 1), width: w2, height: h, loading: ix === 0 ? void 0 : "lazy" }, ix)) }) });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileCard, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "cs", children: [nbPages.map(([src, w2, h], ix) => /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src, alt: nbAlt(ix + 1), width: w2, height: h, loading: ix === 0 ? void 0 : "lazy" }, ix)), /* @__PURE__ */ jsxRuntimeExports.jsx(NoBordersVideo, {})] }) });
   }
   const works = [
     { img: thakthom, title: "Thakthom", sub: "The pulse of Parashurama's land", tag: "Film", route: "/thakthom" },
