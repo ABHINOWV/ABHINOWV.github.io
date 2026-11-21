@@ -10216,6 +10216,30 @@ void main() {
   }
   let nkReturnToWork = false;
   const BEHANCE = "https://www.behance.net/abhinavs8";
+  const nb01 = "/assets/nb01.webp";
+  const nb02 = "/assets/nb02.webp";
+  const nb03 = "/assets/nb03.webp";
+  const nb04 = "/assets/nb04.webp";
+  const nb05 = "/assets/nb05.webp";
+  const nb06 = "/assets/nb06.webp";
+  const nb07 = "/assets/nb07.webp";
+  const nb08 = "/assets/nb08.webp";
+  const nb09 = "/assets/nb09.webp";
+  const nb10 = "/assets/nb10.webp";
+  const nb11 = "/assets/nb11.webp";
+  const nb12 = "/assets/nb12.webp";
+  const nb13 = "/assets/nb13.webp";
+  const nb14 = "/assets/nb14.webp";
+  const nb15 = "/assets/nb15.webp";
+  const nb16 = "/assets/nb16.webp";
+  const nb17 = "/assets/nb17.webp";
+  const nb18 = "/assets/nb18.webp";
+  const nbCover = "/assets/nbcover.webp";
+  const nbPages = [[nb01, 800, 800], [nb02, 1400, 500], [nb03, 1400, 1400], [nb04, 1400, 1400], [nb05, 800, 800], [nb06, 1400, 1400], [nb07, 800, 800], [nb08, 1400, 1400], [nb09, 800, 800], [nb10, 800, 800], [nb11, 1400, 1400], [nb12, 1400, 1400], [nb13, 1400, 800], [nb14, 1400, 1400], [nb15, 1400, 800], [nb16, 1400, 1400], [nb17, 1400, 800], [nb18, 1400, 800]];
+  const nbAlt = (n2) => "No Borders - campaign styling, panel " + n2 + " of 18";
+  function NoBordersProject() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileCard, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "cs", children: nbPages.map(([src, w2, h], ix) => /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src, alt: nbAlt(ix + 1), width: w2, height: h, loading: ix === 0 ? void 0 : "lazy" }, ix)) }) });
+  }
   const works = [
     { img: thakthom, title: "Thakthom", sub: "The pulse of Parashurama's land", tag: "Film", route: "/thakthom" },
     { img: stussy, title: "Stussy x J.Riggings", sub: "Fashion collaboration concept", tag: "Campaign", route: "/stussy" },
@@ -10224,11 +10248,12 @@ void main() {
     { img: abstract3d, title: "Abstract 3D modeling", sub: "Form and material studies", tag: "3D", route: "/abstract3d" },
     { img: altus, title: "Altus", sub: "Brand identity", tag: "Branding", route: "/altus" },
     { img: yatai, title: "Yatai Bowl", sub: "Restaurant branding", tag: "Branding", route: "/yatai" },
-    { img: offgridHero, title: "OFFGRID", sub: "Streetwear brand identity concept", tag: "Branding", route: "/offgrid" }
+    { img: offgridHero, title: "OFFGRID", sub: "Streetwear brand identity concept", tag: "Branding", route: "/offgrid" },
+    { img: nbCover, title: "No Borders", sub: "Campaign styling", tag: "Campaign", route: "/noborders" }
   ];
   const disciplines = [
     { name: "Brand identity", count: "03" },
-    { name: "Campaign design", count: "02" },
+    { name: "Campaign design", count: "03" },
     { name: "Film", count: "02" },
     { name: "3D & motion", count: "01" }
   ];
@@ -10246,7 +10271,7 @@ void main() {
     },
     {
       n: "[ 02 ]",
-      count: "02",
+      count: "03",
       name: "Campaign design",
       short: "Campaigns",
       img: stussy,
@@ -10279,7 +10304,7 @@ void main() {
     }
   ];
   const stats = [
-    { n: "08", label: "Selected projects across branding, campaigns, film and 3D." },
+    { n: "09", label: "Selected projects across branding, campaigns, film and 3D." },
     { n: "30", label: "Appreciations from the design community on Behance." },
     { n: "523", label: "Project views and counting on Behance." },
     { n: "2020", label: "One point of contact since 2020, from first idea to final files." }
@@ -10332,7 +10357,7 @@ void main() {
       const i = slots.indexOf(k2);
       return { r: Math.floor(i / 3), c: i % 3 };
     };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nk-shuffle", "aria-hidden": "true", children: works.map((w2, k2) => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nk-shuffle", "aria-hidden": "true", children: works.slice(0, 8).map((w2, k2) => {
       const { r: r2, c } = where(k2);
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
@@ -11108,7 +11133,7 @@ void main() {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nk-hero-labels", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Independent" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Ahmedabad, IN" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Selected work [08]" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Selected work [09]" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FluidGiant, {}),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nk-hero-grid", children: [
@@ -11189,7 +11214,7 @@ void main() {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "nk-section", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Label, { n: "05", children: "Project index" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nk-h2 nk-h2-xl rv", children: "All eight projects" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "nk-h2 nk-h2-xl rv", children: "All nine projects" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nk-tickets", children: [
             works.map((w2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Link, { className: `nk-ticket nk-ticket-f${i % 3} rv`, to: w2.route, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "nk-ticket-name", children: w2.title }),
@@ -11211,7 +11236,7 @@ void main() {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rc-totals rv", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "SUBTOTAL" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "08 PROJECTS" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "09 PROJECTS" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "TAX" }),
@@ -11219,7 +11244,7 @@ void main() {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rc-total", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "TOTAL" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "08" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "09" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "PAID BY" }),
@@ -11360,6 +11385,10 @@ void main() {
         "YATAI BOWL ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: "/ BRANDING" })
       ] }), children: /* @__PURE__ */ jsxRuntimeExports.jsx(YataiProject, {}) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/noborders", element: /* @__PURE__ */ jsxRuntimeExports.jsx(CsRoute, { bar: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+        "NO BORDERS ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: "/ CAMPAIGN" })
+      ] }), children: /* @__PURE__ */ jsxRuntimeExports.jsx(NoBordersProject, {}) }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "*", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Portfolio, {}) })
     ] });
   }
