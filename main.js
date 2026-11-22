@@ -11001,8 +11001,7 @@ void main() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nk-pr-sigbox", ref: sigBoxRef, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: signature, alt: "" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nk-pr-cap", children: "Signed · Abhinav S" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nk-pr-rule" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Barcode, { seed: 5, label: "2026 0718 ABHINAV S" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "nk-pr-thanks", children: "Thank you for visiting!" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Barcode, { seed: 5, label: "2026 0718 ABHINAV S" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { type: "button", className: "nk-pr-hint", ref: hintRef, style: { opacity: 0 }, children: [
         coarse ? "Swipe up to tear off" : "Scroll to tear off",
